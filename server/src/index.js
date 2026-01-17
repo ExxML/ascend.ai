@@ -1,0 +1,55 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the API' });
+});
+
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("[Server Error]", err.message, req.method, req.path);
+  res.status(500).json({
+    error: "Something went wrong!",
+    message:
+      process.env.NODE_ENV === "development"
+        ? err.message
+        : "Internal server error",
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+//   console.log(`📍 Health check: http://localhost:${PORT}/health`);
+// });
+
+// Export for Vercel backend deployment
+export default app;
+
+if (!process.env.VERCEL) {
+  const PORT = 3001;
+  app.listen(PORT, () => {
+    console.log(`🚀 API listening on http://localhost:${PORT}`);
+    console.log(`📍 Health: http://localhost:${PORT}/api/health`);
+  });
+}

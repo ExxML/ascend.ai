@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import './App.css';
+import { useState, useEffect } from 'react';
+import { auth, signInWithGoogle, logOut } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const API_URL = 'http://localhost:5001/api';
 
@@ -10,273 +13,137 @@ const SALARY_RANGES = ['prefer_not_to_say', '<$1k', '$1k-$2k', '$2k-$3k', '$3k-$
 const RISK_OPTIONS = ['risky', 'medium', 'reliable'];
 
 function App() {
-  // Profile state
-  const [profile, setProfile] = useState({
-    age_range: '25-29',
-    location: 'Seattle, WA',
-    property_value: 'prefer_not_to_say',
-    vehicle_value: 'prefer_not_to_say',
-    investments: '$5k-$10k',
-    debt: '$25k-$50k',
-    monthly_salary: '$4k-$5k',
-    has_dependents: false,
-    employment_stability: 0.7
-  });
+  const [showButtons, setShowButtons] = useState(false);
+  const [canClick, setCanClick] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Query state
-  const [query, setQuery] = useState({
-    risk_tolerance: 'medium',
-    current_situation: 'Just started a new job, have student loans',
-    goal: 'Pay off debt and start investing for the future'
-  });
+  useEffect(() => {
+    // Enable clicking after initial animation completes
+    const timer = setTimeout(() => {
+      setCanClick(true);
+    }, 1500);
 
-  // Results state
-  const [results, setResults] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handleProfileChange = (field, value) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleQueryChange = (field, value) => {
-    setQuery(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch(`${API_URL}/recommend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...profile, ...query })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setResults(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
+    // Listen for auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setLoading(false);
+    });
+
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, []);
+
+  const handleScreenClick = (e) => {
+    // Don't trigger if clicking on buttons
+    if (e.target.closest('.auth-button') || e.target.closest('.logout-button')) {
+      return;
+    }
+    if (canClick && !showButtons && !user) {
+      setShowButtons(true);
     }
   };
 
+  const handleGoogleLogin = async (e) => {
+    e.stopPropagation();
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
+
+  const handleGoogleSignup = async (e) => {
+    e.stopPropagation();
+    // For Google OAuth, login and signup use the same flow
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
+  };
+
+  const handleLogout = async (e) => {
+    e.stopPropagation();
+    try {
+      await logOut();
+      setShowButtons(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="App">
+        <div className="loading">Loading...</div>
+      </div>
+    );
+  }
+
+  // If user is logged in, show dashboard
+  if (user) {
+    return (
+      <div className="App">
+        <div className="dashboard">
+          <h1 className="title">ASCEND.ai</h1>
+          <div className="user-info">
+            <img 
+              src={user.photoURL || '/default-avatar.png'} 
+              alt="Profile" 
+              className="user-avatar"
+            />
+            <h2 className="welcome-text">Welcome, {user.displayName || 'User'}!</h2>
+            <p className="user-email">{user.email}</p>
+          </div>
+          <button className="logout-button" onClick={handleLogout}>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Landing page for non-authenticated users
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>🚀 Ascend Engine Tester</h1>
-      </header>
-
-      <main className="App-main">
-        <div className="input-section">
-          {/* Profile Inputs */}
-          <div className="card">
-            <h2>📋 Profile (One-time)</h2>
-            
-            <div className="form-group">
-              <label>Age Range</label>
-              <select value={profile.age_range} onChange={e => handleProfileChange('age_range', e.target.value)}>
-                {AGE_RANGES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Monthly Salary</label>
-              <select value={profile.monthly_salary} onChange={e => handleProfileChange('monthly_salary', e.target.value)}>
-                {SALARY_RANGES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Total Debt</label>
-              <select value={profile.debt} onChange={e => handleProfileChange('debt', e.target.value)}>
-                {MONEY_RANGES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Investments</label>
-              <select value={profile.investments} onChange={e => handleProfileChange('investments', e.target.value)}>
-                {MONEY_RANGES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Property Value</label>
-              <select value={profile.property_value} onChange={e => handleProfileChange('property_value', e.target.value)}>
-                {MONEY_RANGES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Vehicle Value</label>
-              <select value={profile.vehicle_value} onChange={e => handleProfileChange('vehicle_value', e.target.value)}>
-                {MONEY_RANGES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Location</label>
-              <input 
-                type="text" 
-                value={profile.location} 
-                onChange={e => handleProfileChange('location', e.target.value)}
-              />
-            </div>
-
-            <div className="form-group checkbox">
-              <label>
-                <input 
-                  type="checkbox" 
-                  checked={profile.has_dependents} 
-                  onChange={e => handleProfileChange('has_dependents', e.target.checked)}
-                />
-                Has Dependents
-              </label>
-            </div>
-
-            <div className="form-group">
-              <label>Employment Stability: {profile.employment_stability}</label>
-              <input 
-                type="range" 
-                min="0" 
-                max="1" 
-                step="0.1"
-                value={profile.employment_stability} 
-                onChange={e => handleProfileChange('employment_stability', parseFloat(e.target.value))}
-              />
-            </div>
-          </div>
-
-          {/* Query Inputs */}
-          <div className="card">
-            <h2>🎯 Query (Per-request)</h2>
-            
-            <div className="form-group">
-              <label>Risk Tolerance</label>
-              <select value={query.risk_tolerance} onChange={e => handleQueryChange('risk_tolerance', e.target.value)}>
-                {RISK_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Current Situation</label>
-              <textarea 
-                value={query.current_situation} 
-                onChange={e => handleQueryChange('current_situation', e.target.value)}
-                rows={3}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Goal</label>
-              <textarea 
-                value={query.goal} 
-                onChange={e => handleQueryChange('goal', e.target.value)}
-                rows={3}
-              />
-            </div>
-
-            <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
-              {loading ? '⏳ Processing...' : '🔍 Get Recommendations'}
-            </button>
-          </div>
+    <div className="App" onClick={handleScreenClick}>
+      <div className={`content-container ${showButtons ? 'show-buttons' : ''}`}>
+        <h1 className="title">ASCEND.ai</h1>
+        <div className="image-container">
+          <img 
+            src="/island.png" 
+            alt="Ascend Island" 
+            className="island-image"
+          />
         </div>
-
-        {/* Results Section */}
-        <div className="results-section">
-          {error && (
-            <div className="card error">
-              <h2>❌ Error</h2>
-              <p>{error}</p>
-              <p className="hint">Make sure the API is running: <code>python engine/api.py</code></p>
-            </div>
-          )}
-
-          {results && (
-            <>
-              {/* Profile Summary */}
-              <div className="card">
-                <h2>📊 Profile Analysis</h2>
-                <div className="summary-grid">
-                  <div className="summary-item">
-                    <span className="label">Life Stage</span>
-                    <span className="value">{results.metadata?.profile_summary?.life_stage}</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="label">Financial Health</span>
-                    <span className="value">{results.metadata?.profile_summary?.financial_health}/5</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="label">Net Worth</span>
-                    <span className="value">${results.metadata?.profile_summary?.net_worth?.toLocaleString()}</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="label">Debt-to-Income</span>
-                    <span className="value">{(results.metadata?.profile_summary?.debt_to_income_ratio * 100)?.toFixed(0)}%</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="label">Goal Category</span>
-                    <span className="value">{results.metadata?.profile_summary?.goal_category?.replace('_', ' ')}</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="label">Processing Time</span>
-                    <span className="value">{results.metadata?.processing_time_ms?.toFixed(1)}ms</span>
-                  </div>
-                </div>
-                <div className="priorities">
-                  <strong>Top Priorities:</strong> {results.metadata?.profile_summary?.top_priorities?.join(', ')}
-                </div>
-              </div>
-
-              {/* Recommendations by Horizon */}
-              {['immediate', 'short_term', 'medium_term', 'long_term'].map(horizon => (
-                results[horizon]?.length > 0 && (
-                  <div className="card" key={horizon}>
-                    <h2>
-                      {horizon === 'immediate' && '⚡ Immediate'}
-                      {horizon === 'short_term' && '📅 Short-Term (1-6 months)'}
-                      {horizon === 'medium_term' && '📆 Medium-Term (6-24 months)'}
-                      {horizon === 'long_term' && '🎯 Long-Term (2-10 years)'}
-                    </h2>
-                    <div className="recommendations">
-                      {results[horizon].map((rec, idx) => (
-                        <div className="recommendation" key={idx}>
-                          <div className="rec-header">
-                            <span className="score">{rec.score?.toFixed(0)}</span>
-                            <span className="name">{rec.name}</span>
-                            <span className="category">{rec.category}</span>
-                          </div>
-                          <p className="description">{rec.description}</p>
-                          {rec.reasoning?.length > 0 && (
-                            <ul className="reasoning">
-                              {rec.reasoning.slice(0, 3).map((r, i) => (
-                                <li key={i}>{r}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              ))}
-
-              {/* Raw JSON */}
-              <div className="card">
-                <h2>🔧 Raw JSON Response</h2>
-                <pre className="json-output">{JSON.stringify(results, null, 2)}</pre>
-              </div>
-            </>
-          )}
+        
+        <div className={`button-container ${showButtons ? 'visible' : ''}`}>
+          <button className="auth-button login-button" onClick={handleGoogleLogin}>
+            <svg className="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Login with Google
+          </button>
+          <button className="auth-button signup-button" onClick={handleGoogleSignup}>
+            <svg className="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Sign up with Google
+          </button>
         </div>
-      </main>
+      </div>
+      
+      {canClick && !showButtons && (
+        <div className="click-hint">Click anywhere to continue</div>
+      )}
     </div>
   );
 }

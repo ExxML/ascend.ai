@@ -1,7 +1,7 @@
 # ascend.ai
 
 <div align="center">
-  <img src="header-image.png" alt="Ascend.ai - Your personal financial decision advisor" width="600">
+  <img src="assets/landing thumbnaiil.png" alt="Ascend.ai - Your personal financial decision advisor" width="600">
 </div>
 
 **A personalized financial decision advisor that generates actionable roadmaps based on your unique financial profile.**
@@ -68,41 +68,9 @@ Ascend.ai solves the problem of inaccessible, expensive, or generic financial ad
 
 ### System Overview
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    React Frontend                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │ Landing Page │  │ Profile Setup│  │ Visualization│  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└───────────────────────┬─────────────────────────────────┘
-                        │ HTTP/REST
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│              Flask REST API (Port 5001)                 │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │  POST /api/recommend                             │  │
-│  │  GET  /api/health                                │  │
-│  └──────────────────────────────────────────────────┘  │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│              ASCEND ENGINE (Core Innovation)             │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │ 1. Input Normalizer & Profile Analyzer            │  │
-│  │ 2. Action Registry System (50+ actions)           │  │
-│  │ 3. Multi-Factor Scorer (8 dimensions)            │  │
-│  │ 4. DAG Builder & Optimizer                       │  │
-│  │ 5. Recommendation Engine                         │  │
-│  │ 6. Personalization Layer                         │  │
-│  └──────────────────────────────────────────────────┘  │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│         Personalized Financial Roadmap Output            │
-└─────────────────────────────────────────────────────────┘
-```
+<div align="center">
+  <img src="assets/flowchart.png" alt="Ascend.ai System Architecture Flowchart" width="800">
+</div>
 
 ### Engine Components
 

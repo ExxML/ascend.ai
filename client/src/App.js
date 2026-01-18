@@ -287,7 +287,6 @@ function App() {
   // Landing page for non-authenticated users
   return (
     <div className="App landing-page" onClick={handleScreenClick}>
-      <img src={ascendLogo} alt="Ascend.ai Logo" className="top-left-logo" />
       {/* SVG Frame Overlay */}
       <div 
         className="landing-page-overlay" 
@@ -345,7 +344,7 @@ function App() {
         <div className={`logo-header ${showButtons ? 'expanded' : ''}`}>
           <div className="house-icon-container">
             <img 
-              src="/logo.svg" 
+              src="/ascend_logo.svg" 
               alt="Ascend.ai Logo" 
               className="house-icon"
             />

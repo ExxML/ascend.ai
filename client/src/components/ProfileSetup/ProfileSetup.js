@@ -134,6 +134,7 @@ function ProfileSetup({ onComplete }) {
   const renderCardContent = (question, index, isSelected, goToNextCard) => {
     const isLastCard = index === profileQuestions.length - 1;
     const currentValue = profileData[question.id];
+    const allFilled = profileQuestions.every(q => profileData[q.id]);
 
     const handleKeyDown = (e) => {
       if (e.key === 'Enter' && !isLastCard) {
@@ -179,8 +180,13 @@ function ProfileSetup({ onComplete }) {
 
         {isLastCard && (
           <div 
-            className={`profile-submit-button ${!isSelected ? 'disabled' : ''}`}
-            onClick={isSelected ? handleSubmit : undefined}
+            className={`profile-submit-button ${!isSelected || !allFilled ? 'disabled' : ''}`}
+            onClick={isSelected && allFilled ? handleSubmit : () => {
+              if (!allFilled) {
+                alert('Please fill in all the fields.');
+              }
+            }}
+            title={!allFilled ? 'Please fill in all the fields.' : ''}
           >
             Complete Profile
           </div>

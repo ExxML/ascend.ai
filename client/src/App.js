@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { auth, signInWithGoogle, logOut, saveUserProfile, checkProfileCompleted } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
+import ProfileConfirmation from './components/ProfileSetup/ProfileConfirmation/ProfileConfirmation';
 import UserInputPage from './components/UserInputPage/UserInputPage';
 import AccountPage from './components/AccountPage/AccountPage';
 
@@ -22,6 +23,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileComplete, setProfileComplete] = useState(false);
+  const [pendingProfileData, setPendingProfileData] = useState(null);
   const [userInputComplete, setUserInputComplete] = useState(false);
   const [queryData, setQueryData] = useState(null);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
@@ -131,16 +133,28 @@ function App() {
     setShowAccountPage(false);
   };
 
-  const handleProfileComplete = async (profileData) => {
+  const handleProfileComplete = (profileData) => {
+    setPendingProfileData(profileData);
+  };
+ 
+  const handleConfirmProfile = async () => {
+    if (!user || !pendingProfileData) {
+      return;
+    }
+ 
     try {
-      // Save profile data to Firestore
-      await saveUserProfile(user.uid, profileData);
-      console.log('Profile saved to database:', profileData);
+      await saveUserProfile(user.uid, pendingProfileData);
+      console.log('Profile saved to database:', pendingProfileData);
       setProfileComplete(true);
+      setPendingProfileData(null);
     } catch (error) {
       console.error('Error saving profile:', error);
       alert('Failed to save profile. Please try again.');
     }
+  };
+
+  const handleEditProfile = () => {
+    setPendingProfileData(null);
   };
 
   const handleUserInputComplete = (inputData) => {
@@ -193,7 +207,15 @@ function App() {
               </svg>
             </button>
           </div>
-          <ProfileSetup onComplete={handleProfileComplete} />
+          {pendingProfileData ? (
+            <ProfileConfirmation
+              profileData={pendingProfileData}
+              onConfirm={handleConfirmProfile}
+              onEdit={handleEditProfile}
+            />
+          ) : (
+            <ProfileSetup onComplete={handleProfileComplete} />
+          )}
         </div>
       );
     }

@@ -1,24 +1,199 @@
-.App {
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-header {
-  background-color: #282c34;
+.App {
   min-height: 100vh;
+  background: linear-gradient(180deg, #0C2C55 0%, #296374 50%, #629FAD 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Animated Cloud Background */
+.App::before,
+.App::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 100%;
+  top: 0;
+  left: -50%;
+  z-index: 0;
+  background-image: 
+    radial-gradient(ellipse 200px 100px at 20% 30%, rgba(237, 237, 206, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 300px 150px at 60% 70%, rgba(237, 237, 206, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse 250px 120px at 80% 20%, rgba(98, 159, 173, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 180px 90px at 40% 80%, rgba(237, 237, 206, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse 220px 110px at 10% 60%, rgba(98, 159, 173, 0.2) 0%, transparent 50%);
+  animation: cloudDrift 60s linear infinite;
+}
+
+.App::after {
+  background-image: 
+    radial-gradient(ellipse 280px 140px at 30% 50%, rgba(237, 237, 206, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 200px 100px at 70% 30%, rgba(98, 159, 173, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 240px 120px at 50% 80%, rgba(237, 237, 206, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse 190px 95px at 85% 60%, rgba(98, 159, 173, 0.25) 0%, transparent 50%);
+  animation: cloudDrift 80s linear infinite reverse;
+}
+
+@keyframes cloudDrift {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.content-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  z-index: 1;
+  transform: translateY(60px);
+  opacity: 1;
+  animation: floatUp 1.5s ease-out;
+  transition: transform 0.8s ease-out;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(60px);
+    opacity: 1;
+  }
+}
+
+.content-container.show-buttons {
+  transform: translateY(-25px) !important;
+  animation: none;
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #EDEDCE;
+  text-transform: uppercase;
+  letter-spacing: 0.3rem;
+  margin-bottom: 2rem;
+  text-shadow: 0 4px 20px rgba(12, 44, 85, 0.5);
+  font-family: 'Arial', sans-serif;
+}
+
+.image-container {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-header h1 {
-  margin-bottom: 1rem;
+.island-image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
 }
 
-.App-header code {
-  background-color: #21252b;
-  padding: 0.2rem 0.5rem;
-  border-radius: 3px;
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 3rem;
+  opacity: 0;
+  transform: translateY(100px);
+  transition: all 0.8s ease-out;
+  pointer-events: none;
+}
+
+.button-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.auth-button {
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.login-button {
+  background: #EDEDCE;
+  color: #0C2C55;
+}
+
+.login-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(12, 44, 85, 0.4);
+  background: #ffffff;
+}
+
+.signup-button {
+  background: linear-gradient(135deg, #296374 0%, #629FAD 100%);
+  color: #EDEDCE;
+}
+
+.signup-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(12, 44, 85, 0.4);
+  filter: brightness(1.15);
+}
+
+.click-hint {
+  position: absolute;
+  bottom: 3rem;
+  color: #EDEDCE;
+  font-size: 1rem;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+    letter-spacing: 0.2rem;
+  }
+
+  .image-container {
+    width: 150px;
+    height: 150px;
+  }
+
+  .auth-button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    min-width: 180px;
+  }
 }

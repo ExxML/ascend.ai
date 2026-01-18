@@ -2,12 +2,14 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { auth, signInWithGoogle, logOut } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 
 function App() {
   const [showButtons, setShowButtons] = useState(false);
   const [canClick, setCanClick] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileComplete, setProfileComplete] = useState(false);
 
   useEffect(() => {
     // Enable clicking after initial animation completes
@@ -61,9 +63,16 @@ function App() {
     try {
       await logOut();
       setShowButtons(false);
+      setProfileComplete(false);
     } catch (error) {
       console.error("Logout failed:", error);
     }
+  };
+
+  const handleProfileComplete = (profileData) => {
+    console.log('Profile data:', profileData);
+    // TODO: Save profile data to database
+    setProfileComplete(true);
   };
 
   if (loading) {
@@ -74,8 +83,18 @@ function App() {
     );
   }
 
-  // If user is logged in, show dashboard
+  // If user is logged in, show profile setup or dashboard
   if (user) {
+    // Show profile setup if not completed
+    if (!profileComplete) {
+      return (
+        <div className="App">
+          <ProfileSetup onComplete={handleProfileComplete} />
+        </div>
+      );
+    }
+
+    // Show dashboard after profile is complete
     return (
       <div className="App">
         <div className="dashboard">

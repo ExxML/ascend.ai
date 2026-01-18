@@ -1,7 +1,7 @@
 import './ScrollableCards.css';
 import { useState, useEffect, useRef } from 'react';
 
-function ScrollableCards({ numberOfCards }) {
+function ScrollableCards({ numberOfCards, renderCardContent, cardsData }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const containerRef = useRef(null);
   const isScrolling = useRef(false);
@@ -55,7 +55,12 @@ function ScrollableCards({ numberOfCards }) {
               zIndex: getZIndex(index)
             }}
           >
-            <div className="scrollable-cards__card-inner"></div>
+            <div className="scrollable-cards__card-inner">
+              {renderCardContent && cardsData && cardsData[index] 
+                ? renderCardContent(cardsData[index], index)
+                : null
+              }
+            </div>
           </div>
         ))}
       </div>

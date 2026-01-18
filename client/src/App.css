@@ -16,6 +16,18 @@
   position: relative;
 }
 
+/* Top left logo styling */
+.top-left-logo {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  width: 60px;
+  height: 60px;
+  z-index: 100;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
 /* Landing page - matching visualization page dark background */
 .App.landing-page {
   background: #0C2C55;
@@ -796,6 +808,13 @@
   .account-button-container {
     top: 1rem;
     right: 1rem;
+  }
+
+  .top-left-logo {
+    top: 1rem;
+    left: 1rem;
+    width: 40px;
+    height: 40px;
   }
 
   .account-button {

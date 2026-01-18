@@ -8,6 +8,7 @@ import UserInputPage from './components/UserInputPage/UserInputPage';
 import AccountPage from './components/AccountPage/AccountPage';
 import VisualPage from './components/Visualization/VisualPage';
 import background from './assets/background.svg';
+import ascendLogo from './assets/ascend_logo.svg';
 
 // Decorative star background component
 const StarDecorations = () => (
@@ -168,6 +169,7 @@ function App() {
   if (loading) {
     return (
       <div className="App">
+        <img src={ascendLogo} alt="Ascend.ai Logo" className="top-left-logo" />
         <StarDecorations />
         <div className="loading">Loading...</div>
       </div>
@@ -180,6 +182,7 @@ function App() {
     if (showAccountPage) {
       return (
         <div className="App app-scrollable">
+          <img src={ascendLogo} alt="Ascend.ai Logo" className="top-left-logo" />
           <AccountPage user={user} onBack={handleCloseAccountPage} />
         </div>
       );
@@ -189,6 +192,7 @@ function App() {
     if (!profileComplete) {
       return (
         <div className="App">
+          <img src={ascendLogo} alt="Ascend.ai Logo" className="top-left-logo" />
           <StarDecorations />
           <div className="account-button-container" onMouseLeave={handleMouseLeave}>
             {showAccountMenu && (
@@ -226,6 +230,7 @@ function App() {
     if (!userInputComplete) {
       return (
         <div className="App app-scrollable">
+          <img src={ascendLogo} alt="Ascend.ai Logo" className="top-left-logo" />
           <StarDecorations />
           <div className="account-button-container" onMouseLeave={handleMouseLeave}>
             {showAccountMenu && (
@@ -254,6 +259,7 @@ function App() {
     // Show visualization after user input is complete
     return (
       <div className="App visualization-view">
+        <img src={ascendLogo} alt="Ascend.ai Logo" className="top-left-logo" />
         <div className="account-button-container" onMouseLeave={handleMouseLeave}>
           {showAccountMenu && (
             <div className={`account-menu ${isMenuClosing ? 'closing' : ''}`}>
@@ -281,6 +287,7 @@ function App() {
   // Landing page for non-authenticated users
   return (
     <div className="App landing-page" onClick={handleScreenClick}>
+      <img src={ascendLogo} alt="Ascend.ai Logo" className="top-left-logo" />
       {/* SVG Frame Overlay */}
       <div 
         className="landing-page-overlay" 

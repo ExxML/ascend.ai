@@ -25,7 +25,7 @@ function App() {
   const [profileComplete, setProfileComplete] = useState(false);
   const [pendingProfileData, setPendingProfileData] = useState(null);
   const [userInputComplete, setUserInputComplete] = useState(false);
-  const [queryData, setQueryData] = useState(null);
+  const [setQueryData] = useState(null);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [showAccountPage, setShowAccountPage] = useState(false);

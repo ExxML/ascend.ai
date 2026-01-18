@@ -79,6 +79,7 @@ function ScrollableCards({ numberOfCards, renderCardContent, cardsData }) {
               '--offset': index - selectedIndex,
               zIndex: getZIndex(index)
             }}
+            onClick={() => setSelectedIndex(index)}
           >
             <div className="scrollable-cards__card-inner">
               {renderCardContent && cardsData && cardsData[index] 

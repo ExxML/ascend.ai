@@ -6,7 +6,8 @@
 
 .App {
   min-height: 100vh;
-  background: radial-gradient(ellipse at center, #f0f7fa 0%, #d4e8ef 30%, #a8d4e0 60%, #7ec4d4 100%);
+  background-image: url('./assets/background.svg');
+  background-size: cover;
   display: flex;
   align-items: center;
   justify-content: center;

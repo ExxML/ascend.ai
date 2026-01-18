@@ -692,7 +692,7 @@
 .dashboard-title-arrow {
   width: 250px;
   height: 40px;
-  margin-top: -5px;
+  margin-top: -4px;
   opacity: 0;
   transform: scaleX(0);
   transform-origin: left center;

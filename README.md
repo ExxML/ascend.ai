@@ -1,7 +1,7 @@
 # ascend.ai - A Personalized Financial Advisor Engine
 
 <div align="center">
-  <img src="assets/landing thumbnaiil.png" alt="Ascend.ai - Your personal financial decision advisor" width="600">
+  <img src="assets/landing thumbnaiil.png" alt="Ascend.ai - Your personal financial decision advisor" width="800">
 </div>
 
 <div align="center">
@@ -630,7 +630,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+<div align="center">
+
 *ascend.ai allows you to make the right steps so that you can reach your next financial peak.*
+
+</div>
 
 <div align="center">
   <img src="assets/footer.png" alt="Ascend.ai Footer" width="800">

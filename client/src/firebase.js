@@ -136,6 +136,9 @@ export const saveUserProfile = async (userId, profileData) => {
   }
 };
 
+// Required profile fields that must be filled out
+const REQUIRED_PROFILE_FIELDS = ['age', 'location', 'propertyValue', 'vehicleValue', 'investments', 'debt', 'salary'];
+
 // Check if user has completed their profile
 export const checkProfileCompleted = async (userId) => {
   try {
@@ -143,7 +146,26 @@ export const checkProfileCompleted = async (userId) => {
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return docSnap.data().profileCompleted === true;
+      const data = docSnap.data();
+      
+      // Check if profileCompleted flag is set AND all required fields exist
+      if (data.profileCompleted !== true) {
+        return false;
+      }
+      
+      // Verify all required profile fields have values
+      const profile = data.profile;
+      if (!profile) {
+        return false;
+      }
+      
+      // Check each required field has a non-empty value
+      const allFieldsFilled = REQUIRED_PROFILE_FIELDS.every(field => {
+        const value = profile[field];
+        return value !== undefined && value !== null && value !== '';
+      });
+      
+      return allFieldsFilled;
     }
     return false;
   } catch (error) {

@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { auth, signInWithGoogle, logOut, saveUserProfile, checkProfileCompleted } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
+import UserInputPage from './components/UserInputPage/UserInputPage';
+import AccountPage from './components/AccountPage/AccountPage';
 
 function App() {
   const [showButtons, setShowButtons] = useState(false);
@@ -10,8 +12,11 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileComplete, setProfileComplete] = useState(false);
+  const [userInputComplete, setUserInputComplete] = useState(false);
+  const [setQueryData] = useState(null);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
+  const [showAccountPage, setShowAccountPage] = useState(false);
 
   useEffect(() => {
     // Enable clicking after initial animation completes
@@ -105,6 +110,16 @@ function App() {
     }
   };
 
+  const handleOpenAccountPage = () => {
+    setShowAccountMenu(false);
+    setIsMenuClosing(false);
+    setShowAccountPage(true);
+  };
+
+  const handleCloseAccountPage = () => {
+    setShowAccountPage(false);
+  };
+
   const handleProfileComplete = async (profileData) => {
     try {
       // Save profile data to Firestore
@@ -117,6 +132,12 @@ function App() {
     }
   };
 
+  const handleUserInputComplete = (inputData) => {
+    console.log('User input completed:', inputData);
+    setQueryData(inputData);
+    setUserInputComplete(true);
+  };
+
   if (loading) {
     return (
       <div className="App">
@@ -127,6 +148,15 @@ function App() {
 
   // If user is logged in, show profile setup or dashboard
   if (user) {
+    // Show account page if requested
+    if (showAccountPage) {
+      return (
+        <div className="App app-scrollable">
+          <AccountPage user={user} onBack={handleCloseAccountPage} />
+        </div>
+      );
+    }
+
     // Show profile setup if not completed
     if (!profileComplete) {
       return (
@@ -134,7 +164,7 @@ function App() {
           <div className="account-button-container" onMouseLeave={handleMouseLeave}>
             {showAccountMenu && (
               <div className={`account-menu ${isMenuClosing ? 'closing' : ''}`}>
-                <button className="account-menu-button">Account</button>
+                <button className="account-menu-button" onClick={handleOpenAccountPage}>Account</button>
                 <button className="account-menu-button logout" onClick={handleLogout}>
                   Log Out
                 </button>
@@ -155,13 +185,41 @@ function App() {
       );
     }
 
-    // Show dashboard after profile is complete
+    // Show user input page after profile is complete
+    if (!userInputComplete) {
+      return (
+        <div className="App">
+          <div className="account-button-container" onMouseLeave={handleMouseLeave}>
+            {showAccountMenu && (
+              <div className={`account-menu ${isMenuClosing ? 'closing' : ''}`}>
+                <button className="account-menu-button" onClick={handleOpenAccountPage}>Account</button>
+                <button className="account-menu-button logout" onClick={handleLogout}>
+                  Log Out
+                </button>
+              </div>
+            )}
+            <button 
+              className="account-button" 
+              onClick={toggleAccountMenu}
+            >
+              <svg className="account-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="8" r="4" stroke="#EDEDCE" strokeWidth="2"/>
+                <path d="M4 20C4 16.6863 6.68629 14 10 14H14C17.3137 14 20 16.6863 20 20" stroke="#EDEDCE" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <UserInputPage onComplete={handleUserInputComplete} />
+        </div>
+      );
+    }
+
+    // Show dashboard after user input is complete
     return (
       <div className="App">
         <div className="account-button-container" onMouseLeave={handleMouseLeave}>
           {showAccountMenu && (
             <div className={`account-menu ${isMenuClosing ? 'closing' : ''}`}>
-              <button className="account-menu-button">Account</button>
+              <button className="account-menu-button" onClick={handleOpenAccountPage}>Account</button>
               <button className="account-menu-button logout" onClick={handleLogout}>
                 Log Out
               </button>

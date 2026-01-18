@@ -7,7 +7,7 @@ import ProfileConfirmation from './components/ProfileSetup/ProfileConfirmation/P
 import UserInputPage from './components/UserInputPage/UserInputPage';
 import AccountPage from './components/AccountPage/AccountPage';
 import VisualPage from './components/Visualization/VisualPage';
-import landingFrame from './landing-frame.svg';
+import background from './assets/background.svg';
 
 // Decorative star background component
 const StarDecorations = () => (
@@ -284,7 +284,7 @@ function App() {
       {/* SVG Frame Overlay */}
       <div 
         className="landing-page-overlay" 
-        style={{ backgroundImage: `url(${landingFrame})` }}
+        style={{ backgroundImage: `url(${background})` }}
       />
       
       {/* Decorative background elements */}

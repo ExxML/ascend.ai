@@ -19,9 +19,6 @@ function ScrollableCards({ numberOfCards, renderCardContent, cardsData }) {
   }, []);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
     const handleWheel = (e) => {
       e.preventDefault();
       
@@ -48,10 +45,11 @@ function ScrollableCards({ numberOfCards, renderCardContent, cardsData }) {
       }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    // Attach to window instead of container to allow scrolling anywhere
+    window.addEventListener('wheel', handleWheel, { passive: false });
     
     return () => {
-      container.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('wheel', handleWheel);
     };
   }, [selectedIndex, cards.length]);
 

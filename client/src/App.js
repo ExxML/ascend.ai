@@ -1,7 +1,16 @@
+import { useState } from 'react';
 import './App.css';
 import { useState, useEffect } from 'react';
 import { auth, signInWithGoogle, logOut } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+
+const API_URL = 'http://localhost:5001/api';
+
+// Options for dropdowns
+const AGE_RANGES = ['18-24', '25-29', '30-34', '35-44', '45-54', '55-64', '65-74', '75+'];
+const MONEY_RANGES = ['prefer_not_to_say', '$0', '<$5k', '$5k-$10k', '$10k-$25k', '$25k-$50k', '$50k-$100k', '$100k-$250k', '$250k-$500k', '$500k-$1m', '$1m+'];
+const SALARY_RANGES = ['prefer_not_to_say', '<$1k', '$1k-$2k', '$2k-$3k', '$3k-$4k', '$4k-$5k', '$5k-$6k', '$6k-$7k', '$7k+'];
+const RISK_OPTIONS = ['risky', 'medium', 'reliable'];
 
 function App() {
   const [showButtons, setShowButtons] = useState(false);

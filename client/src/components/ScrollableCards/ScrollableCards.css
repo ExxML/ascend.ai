@@ -31,7 +31,7 @@
   height: 100%;
   border-radius: 28px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   
   /* Liquid glass effect - opaque base with glass overlay */
   background: 

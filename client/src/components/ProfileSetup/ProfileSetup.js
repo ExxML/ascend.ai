@@ -131,9 +131,15 @@ function ProfileSetup({ onComplete }) {
     }
   };
 
-  const renderCardContent = (question, index) => {
+  const renderCardContent = (question, index, isSelected, goToNextCard) => {
     const isLastCard = index === profileQuestions.length - 1;
     const currentValue = profileData[question.id];
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && !isLastCard) {
+        goToNextCard();
+      }
+    };
 
     return (
       <div className="profile-card-content">
@@ -152,12 +158,14 @@ function ProfileSetup({ onComplete }) {
               placeholder={question.placeholder}
               value={currentValue || ''}
               onChange={(e) => handleValueChange(question.id, e.target.value)}
+              onKeyDown={handleKeyDown}
             />
           ) : (
             <select
               className="profile-dropdown"
               value={currentValue || ''}
               onChange={(e) => handleValueChange(question.id, e.target.value, e)}
+              onKeyDown={handleKeyDown}
             >
               <option value="" disabled>Select an option</option>
               {question.options.map((option, idx) => (
@@ -170,12 +178,12 @@ function ProfileSetup({ onComplete }) {
         </div>
 
         {isLastCard && (
-          <button 
-            className="profile-submit-button"
-            onClick={handleSubmit}
+          <div 
+            className={`profile-submit-button ${!isSelected ? 'disabled' : ''}`}
+            onClick={isSelected ? handleSubmit : undefined}
           >
             Complete Profile
-          </button>
+          </div>
         )}
 
         <div className="profile-card-progress">

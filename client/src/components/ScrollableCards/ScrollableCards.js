@@ -43,6 +43,12 @@ function ScrollableCards({ numberOfCards, renderCardContent, cardsData }) {
     return cards.length - distance;
   };
 
+  const goToNextCard = () => {
+    if (selectedIndex < cards.length - 1) {
+      setSelectedIndex(selectedIndex + 1);
+    }
+  };
+
   return (
     <div className="scrollable-cards" ref={containerRef}>
       <div className="scrollable-cards__container">
@@ -57,7 +63,7 @@ function ScrollableCards({ numberOfCards, renderCardContent, cardsData }) {
           >
             <div className="scrollable-cards__card-inner">
               {renderCardContent && cardsData && cardsData[index] 
-                ? renderCardContent(cardsData[index], index)
+                ? renderCardContent(cardsData[index], index, index === selectedIndex, goToNextCard)
                 : null
               }
             </div>

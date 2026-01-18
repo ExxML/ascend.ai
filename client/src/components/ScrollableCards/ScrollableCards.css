@@ -1,0 +1,96 @@
+/* Component-specific styles */
+.scrollable-cards {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, #16213e 0%, #1a1a2e 100%);
+  position: relative;
+}
+
+.scrollable-cards__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrollable-cards__card {
+  width: 700px;
+  height: 400px;
+  border-radius: 28px;
+  position: absolute;
+  transition: transform 0.08s ease-out, opacity 0.08s ease-out;
+  transform: translateY(calc(var(--offset) * 120px)) scale(calc(1 - abs(var(--offset)) * 0.05));
+}
+
+.scrollable-cards__card-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  
+  /* Liquid glass effect - opaque base with glass overlay */
+  background: 
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.12) 100%
+    ),
+    rgba(30, 40, 60, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  
+  /* Glass border */
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  
+  /* Symmetrical shadow */
+  box-shadow: 
+    0 0 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.scrollable-cards__card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 70%
+  );
+  border-radius: 28px;
+  pointer-events: none;
+}
+
+/* Selected card state */
+.scrollable-cards__card--selected {
+  transform: translateY(0) scale(1);
+}
+
+.scrollable-cards__card--selected .scrollable-cards__card-inner {
+  background: 
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.18) 100%
+    ),
+    rgba(35, 45, 70, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 0 60px rgba(0, 0, 0, 0.4),
+    inset 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Non-selected cards appear behind */
+.scrollable-cards__card:not(.scrollable-cards__card--selected) {
+  opacity: 1;
+}
